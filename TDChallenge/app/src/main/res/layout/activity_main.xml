@@ -13,23 +13,13 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Places Nearby"
-            android:id="@+id/textView" />
-
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="205dp"
-            android:id="@+id/listViewPlaces" />
-
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/button" />
+            android:text="Check-In. Need to make me look nice"
+            android:id="@+id/buttonCheckIn"
+            android:singleLine="false"
+            android:onClick="CheckInButtonClick" />
 
     </LinearLayout>
 

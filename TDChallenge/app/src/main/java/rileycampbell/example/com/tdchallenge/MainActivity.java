@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,6 +36,13 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+
+        }
+
+    public void CheckInButtonClick(View view) {
+
         GPSService mGPSService = new GPSService(getBaseContext());
         mGPSService.getLocation();
 
@@ -55,9 +64,8 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
             new GetPlaces().execute();
 
 
-            }
         }
-
+    }
 
 
     private class GetPlaces extends AsyncTask<Void, Void,  ArrayList<Place>>{
@@ -99,8 +107,8 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                     dialog.dismiss();
                 }
                 //TEST CODE for testing 1 result
-                Place temp = result.get(0);
-                result.clear();
+                //Place temp = result.get(0);
+               // result.clear();
                //result.add(temp);
 
                 if (result.size() == 1){//ONLY 1 RESULT
@@ -113,6 +121,7 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked yes button
+                            //TODO: LAUNCH NEW ACTIVITY WITH PLACE INFO
                         }
                     });
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -125,16 +134,59 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                     dialog.show();
                 }
                 else if (result.size() > 1){//MORE THEN 1 RESULT
-                    ListView lv = (ListView)findViewById(R.id.listViewPlaces);
-                    ArrayList<String> PlaceNames = new ArrayList<String>();
+                    //ListView lv = (ListView)findViewById(R.id.listViewPlaces);
+                    //ArrayList<String> PlaceNames = new ArrayList<String>();
+                    String[] PlaceNames = new String[result.size()];
+                    int counter = 0;
                     for (Place s : result){
-                        PlaceNames.add(s.getName());
+                        PlaceNames[counter] = s.getName();
+                        counter ++;
                     }
-                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                            MainActivity.this,
-                            android.R.layout.simple_list_item_1,
-                            PlaceNames );
-                    lv.setAdapter(arrayAdapter);
+//                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+//                            MainActivity.this,
+//                            android.R.layout.simple_list_item_1,
+//                            PlaceNames );
+//                    lv.setAdapter(arrayAdapter);
+                    //INSTEAD OF PUTTING IT ON ACTIVITY. PUT IT IN DIALOG WIT THE OTHER 3 RESULT FEATURES
+                    //CHANGE MAIN ACTIVITY TO JUST HAVE 1 BUTTON. THE CHECK-IN BUTTON
+
+                    // 1. Instantiate an AlertDialog.Builder with its constructor
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                    // 2. Chain together various setter methods to set the dialog characteristics
+                    builder.setTitle("Are you at any of these locations?");
+                    builder.setPositiveButton("Yes", null);
+                    builder.setSingleChoiceItems(PlaceNames, -1, null);
+                    // 3. Get the AlertDialog from create()
+                    final AlertDialog d = builder.create();
+                    //set on click listener
+                    d.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface dialog) {
+                            Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
+                            b.setOnClickListener(new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View view) {
+                                    ListView lw = ((AlertDialog)d).getListView();
+                                    int but = lw.getCheckedItemPosition();
+                                    if (lw.getCheckedItemPosition() != -1){
+                                        String checkedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition()).toString();
+                                        Toast.makeText(getBaseContext(), checkedItem, Toast.LENGTH_SHORT).show();
+                                        //Dismiss once everything is OK.
+                                        d.dismiss();
+                                        //TODO: LAUNCH NEW ACTIVITY WITH PLACE INFO
+                                    }
+                                    else{
+                                    // DO NOT CLOSE DIALOG
+                                        Toast.makeText(getBaseContext(), "Select something you bum", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            });
+                        }
+                    });
+                    d.show();
                 }
                 else{//NO RESULTS
                     // 1. Instantiate an AlertDialog.Builder with its constructor
@@ -142,15 +194,17 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
 
                     // 2. Chain together various setter methods to set the dialog characteristics
                     builder.setMessage("No store locations were found near your location. Would you like to search again?")
-                            .setTitle("Where are you?");
+                           .setTitle("Where are you?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked yes button
+                            //TODO: get their latlong again and look for places again
                         }
                     });
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
+                            //TODO: CLOSE DIALOG
                         }
                     });
                     // 3. Get the AlertDialog from create()
@@ -176,7 +230,7 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                 urlString.append(Double.toString(latitude));
                 urlString.append(",");
                 urlString.append(Double.toString(longitude));
-                urlString.append("&radius=500");//meters
+                urlString.append("&radius=325");//meters
                 urlString.append("&sensor=false&key=" + "AIzaSyAsb8XP5659RBOaQSYK5e71Ta2Z0CQ_5Q4"); //THIS USES SERVER KEY
                 //CANNOT HAVE 'radius' AND 'rankby' in the same statment. So will keep radius small
                 //The goal it to have very few places show up.
