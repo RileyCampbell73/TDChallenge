@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,7 +102,7 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
             }
             //after the call to google
             @Override
-            protected void onPostExecute(ArrayList<Place> result) {
+            protected void onPostExecute(final ArrayList<Place> result) {
                 if (dialog.isShowing()) {
                     dialog.dismiss();
                 }
@@ -171,8 +174,19 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                                         String checkedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition()).toString();
                                         Toast.makeText(getBaseContext(), checkedItem, Toast.LENGTH_SHORT).show();
                                         //Dismiss once everything is OK.
-                                        d.dismiss();
+
                                         //TODO: LAUNCH NEW ACTIVITY WITH PLACE INFO
+                                        Intent i = new Intent(MainActivity.this ,CouponActivity.class);
+
+                                        //sName = et.getText().toString();
+                                        //i.putExtra("Place",sName);
+                                       // i.putExtra("gender",isMale);
+                                        for (Place p : result){
+                                            if (p.getName() == checkedItem)
+                                            i.putExtra("Place",new Gson().toJson(p));
+                                        }
+                                        d.dismiss();
+                                        startActivity(i);
                                     }
                                     else{
                                     // DO NOT CLOSE DIALOG
