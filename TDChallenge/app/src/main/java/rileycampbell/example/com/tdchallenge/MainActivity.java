@@ -36,9 +36,6 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-
         }
 
     public void CheckInButtonClick(View view) {
