@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -37,8 +38,9 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
         }
 
     public void CheckInButtonClick(View view) {
@@ -241,7 +243,7 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                 urlString.append(Double.toString(latitude));
                 urlString.append(",");
                 urlString.append(Double.toString(longitude));
-                urlString.append("&radius=325");//meters
+                urlString.append("&radius=1000");//meters
                 urlString.append("&sensor=false&key=" + "AIzaSyAsb8XP5659RBOaQSYK5e71Ta2Z0CQ_5Q4"); //THIS USES SERVER KEY
                 //CANNOT HAVE 'radius' AND 'rankby' in the same statment. So will keep radius small
                 //The goal it to have very few places show up.
@@ -260,7 +262,7 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                             Log.v("Places Services ", "" + place);
                             arrayList.add(place);
                         } catch (Exception e) {
-                            //ERROR HANDLE IT
+                           int error = 0;
                         }
                     }
                 } catch (JSONException ex) {

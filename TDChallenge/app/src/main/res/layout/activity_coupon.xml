@@ -8,9 +8,45 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="rileycampbell.example.com.tdchallenge.CouponActivity">
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|center_horizontal">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Place: "
+            android:id="@+id/textViewPlaceName" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton2"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="25 % off purchase" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton4"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="5$ off Blank" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton3"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="$10 or more for movie ticket" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I made a transaction here!"
+            android:id="@+id/button" />
+
+    </LinearLayout>
 </RelativeLayout>

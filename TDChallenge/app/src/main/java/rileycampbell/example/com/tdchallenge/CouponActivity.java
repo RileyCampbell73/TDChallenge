@@ -1,10 +1,17 @@
 package rileycampbell.example.com.tdchallenge;
 
 import android.app.Activity;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.widget.TextView;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import java.util.Random;
 import com.google.gson.Gson;
 
 
@@ -21,8 +28,16 @@ public class CouponActivity extends Activity {
         }
         Place place = new Gson().fromJson(jsonMyObject, Place.class);
         int but = 0;
-    }
 
+//        Random random = new Random();
+//        int range = (0 - 3) + 1;//0 = start, 3 = end
+//        // compute a fraction of the range, 0 <= frac < range
+//        int fraction = (range * random.nextInt());
+//        int randomNumber =  (int)(fraction + 0);
+
+        TextView text = (TextView) findViewById(R.id.textViewPlaceName);
+        text.setText("Current Place: " + place.getName());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

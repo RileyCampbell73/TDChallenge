@@ -1,5 +1,6 @@
 package rileycampbell.example.com.tdchallenge;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +17,15 @@ public class Place {
     private String vicinity;
     private Double latitude;
     private Double longitude;
+    private String[] types;
+
+    public String[] getTypes() {
+        return types;
+    }
+
+    public void setTypes(String[] types) {
+        this.types = types;
+    }
 
     public String getId() {
         return id;
@@ -65,6 +75,15 @@ public class Place {
             result.setName(pontoReferencia.getString("name"));
             result.setVicinity(pontoReferencia.getString("vicinity"));
             result.setId(pontoReferencia.getString("id"));
+            JSONArray arr = pontoReferencia.getJSONArray("types");
+
+            String[] types = new String[arr.length()];
+            for(int i = 0; i < arr.length(); i++){
+                types[i] = (arr.get(i).toString());
+
+            }
+            result.setTypes(types);
+
             return result;
         } catch (JSONException ex) {
             Logger.getLogger(Place.class.getName()).log(Level.SEVERE, null, ex);
