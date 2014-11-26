@@ -189,7 +189,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         Cursor check =  myDataBase.rawQuery("Select * from Check_In",null);
                         check.moveToLast();
                         values.put("transID", c.getInt(0));
-                        values.put("placeID", check.getInt(0));
+                        values.put("placeID", check.getInt(2));
                         myDataBase.insert("UserTransactions",null,values);
                     }
                     else{

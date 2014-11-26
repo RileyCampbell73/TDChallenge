@@ -158,6 +158,7 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                     // 2. Chain together various setter methods to set the dialog characteristics
                     builder.setTitle("Are you at any of these locations?");
                     builder.setPositiveButton("Yes", null);
+
                     builder.setSingleChoiceItems(PlaceNames, -1, null);
                     // 3. Get the AlertDialog from create()
                     final AlertDialog d = builder.create();
