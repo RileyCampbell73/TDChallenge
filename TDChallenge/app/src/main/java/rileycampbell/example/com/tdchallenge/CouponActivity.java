@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.io.IOException;
 import java.util.Random;
 import com.google.gson.Gson;
 
@@ -37,6 +40,61 @@ public class CouponActivity extends Activity {
 
         TextView text = (TextView) findViewById(R.id.textViewPlaceName);
         text.setText("Current Place: " + place.getName());
+
+        DataBaseHelper myDbHelper;
+        myDbHelper = new DataBaseHelper(this);
+
+        try {
+            myDbHelper.createDataBase();
+        } catch (IOException ioe) { throw new Error("Unable to create database");}
+
+        try {
+            myDbHelper.openDataBase();
+            //myDbHelper.Check_In(place);
+
+            //Cursor c = myDbHelper.getTransactions();
+            //Cursor c = myDbHelper.getPlaces();
+            myDbHelper.Check_In(place);
+            myDbHelper.addTransaction(15.74);
+            myDbHelper.addUserTransaction(15.74);
+
+            Cursor c = myDbHelper.getUserTransactions();
+            if (c.moveToFirst())
+            {
+                do {
+                    System.out.println("User Transactions " +c.getString(0) + " " + c.getString(1) + " " + c.getString(2) );
+                } while (c.moveToNext());
+            }
+            c = myDbHelper.getPlaces();
+            if (c.moveToFirst())
+            {
+                do {
+                    System.out.println("Place " +c.getString(1)  );
+                } while (c.moveToNext());
+            }
+            c = myDbHelper.getTransactions();
+            if (c.moveToFirst())
+            {
+                do {
+                    System.out.println("Transactions " +  c.getString(0)+" " +c.getString(1) + " " +  c.getString(2) );
+                } while (c.moveToNext());
+            }
+            c = myDbHelper.getCheckins();
+            if (c.moveToFirst())
+            {
+                do {
+                    System.out.println("Check-In " +c.getString(1) + " " +  c.getString(2) );
+                } while (c.moveToNext());
+            }
+            myDbHelper.removeeverything();
+            myDbHelper.close();
+            c.close();
+        }catch(SQLException sqle){
+            throw sqle;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -56,5 +114,16 @@ public class CouponActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void OnButtonClick(View view) {
+        switch (view.getId()){
+            case R.id.buttonTransaction:
+                break;
+            case R.id.buttonUserTransaction:
+                break;
+
+        }
+
     }
 }
