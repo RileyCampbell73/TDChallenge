@@ -164,6 +164,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put("spent", moneyspent);
         myDataBase.insert("Transactions",null,values);
     }
+    public Cursor getLastUserTransatPlace(Place place){
+        Cursor c =  myDataBase.rawQuery("Select t.DateTime, t.spent from Transactions t " +
+                                        "LEFT JOIN UserTransactions u ON t.transID = u.transID " +
+                                        "LEFT JOIN Place p ON u.placeID = p.placeID "+
+                                        "WHERE p.GPLaceID = ?",new String[]{place.getId()});
+        return c;
+    }
     public void addUserTransaction(double userSpent){
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
@@ -184,8 +191,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         //add the user transaction
                         ContentValues values = new ContentValues();
                         values = new ContentValues();
-//                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-//                        Date date = new Date();
                         Cursor check =  myDataBase.rawQuery("Select * from Check_In",null);
                         check.moveToLast();
                         values.put("transID", c.getInt(0));

@@ -55,7 +55,7 @@ public class CouponActivity extends Activity {
         try {
             myDbHelper.openDataBase();
             //myDbHelper.Check_In(place);
-            myDbHelper.removeeverything();
+           // myDbHelper.removeeverything();
             //Cursor c = myDbHelper.getTransactions();
             //Cursor c = myDbHelper.getPlaces();
             myDbHelper.Check_In(place);
@@ -89,6 +89,19 @@ public class CouponActivity extends Activity {
                 do {
                     System.out.println("Check-In " +c.getString(1) + " " +  c.getString(2) );
                 } while (c.moveToNext());
+            }
+            c = myDbHelper.getLastUserTransatPlace(place);
+            if (c.moveToFirst())
+            {
+                c.moveToLast();
+                System.out.println("Last check-in's" +c.getString(0) + " " +  c.getString(1) );
+                //display last check in at this location
+                TextView tv = (TextView)findViewById(R.id.textViewLastCheckin);
+                tv.setText("Welcome back! You were last here " + c.getString(0) + " and you spent $"+c.getString(1) + "." );
+                tv.setVisibility(View.VISIBLE);
+            }
+            else{
+                //no last check in
             }
             myDbHelper.close();
             c.close();
@@ -139,8 +152,7 @@ public class CouponActivity extends Activity {
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                // get user input and set it to result
-                                // edit text
+                                // get user input and send it to DB
                                 userVal = Double.parseDouble(userInput.getText().toString());
                                 DataBaseHelper myDbHelper;
                                 myDbHelper = new DataBaseHelper(CouponActivity.this);
@@ -149,7 +161,6 @@ public class CouponActivity extends Activity {
                                 } catch (IOException ioe) {
                                     throw new Error("Unable to create database");
                                 }
-
                                 try {
                                     myDbHelper.openDataBase();
                                     if (isUserTrans) {
@@ -186,13 +197,9 @@ public class CouponActivity extends Activity {
 
         // show it
         alertDialog.show();
-
-        //return 0.0;
     }
     public void OnButtonClick(View view) {
 
-        DataBaseHelper myDbHelper;
-        myDbHelper = new DataBaseHelper(this);
         switch (view.getId()){
             case R.id.buttonTransaction:
                 userVal = 0.0;
@@ -201,9 +208,7 @@ public class CouponActivity extends Activity {
             case R.id.buttonUserTransaction:
                 userVal = 0.0;
                 OpenTextDialog(true);
-
                 break;
-
         }
 
     }

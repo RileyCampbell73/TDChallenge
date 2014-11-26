@@ -18,7 +18,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Current Place: "
-            android:id="@+id/textViewPlaceName" />
+            android:id="@+id/textViewPlaceName"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewLastCheckin"
+            android:visibility="gone" />
 
         <Button
             android:layout_width="fill_parent"
