@@ -7,18 +7,18 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+
 
 import java.io.IOException;
-import java.util.Random;
+
 import com.google.gson.Gson;
 
 
@@ -27,6 +27,8 @@ public class CouponActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_coupon);
         String jsonMyObject = "";
         Bundle extras = getIntent().getExtras();
@@ -34,16 +36,9 @@ public class CouponActivity extends Activity {
             jsonMyObject = extras.getString("Place");
         }
         Place place = new Gson().fromJson(jsonMyObject, Place.class);
-        int but = 0;
-
-//        Random random = new Random();
-//        int range = (0 - 3) + 1;//0 = start, 3 = end
-//        // compute a fraction of the range, 0 <= frac < range
-//        int fraction = (range * random.nextInt());
-//        int randomNumber =  (int)(fraction + 0);
 
         TextView text = (TextView) findViewById(R.id.textViewPlaceName);
-        text.setText("Current Place: " + place.getName());
+        text.setText("Currently at: " + place.getName());
 
         DataBaseHelper myDbHelper;
         myDbHelper = new DataBaseHelper(this);

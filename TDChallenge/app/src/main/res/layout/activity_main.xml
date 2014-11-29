@@ -10,6 +10,29 @@
     android:background="#98C93A">
 
     <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Range for Place search: "
+            android:id="@+id/textViewRange"
+            android:visibility="gone"
+            android:textIsSelectable="false" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerRange"
+            android:visibility="gone"
+            android:focusableInTouchMode="false"
+            android:entries="@array/range"
+            android:focusable="false" />
+    </LinearLayout>
+
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -20,7 +43,8 @@
             android:layout_width="153dp"
             android:layout_height="213dp"
             android:id="@+id/imageView"
-            android:src="@drawable/tdlogo2" />
+            android:src="@drawable/tdlogo2"
+            android:onClick="TdLogoTap" />
 
         <Button
             android:layout_width="151dp"

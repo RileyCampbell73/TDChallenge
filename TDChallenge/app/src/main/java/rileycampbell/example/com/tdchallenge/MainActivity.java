@@ -12,35 +12,49 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.gson.Gson;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-//todo: put the places search stuff in a async class. see craigs code or example code online
 public class MainActivity extends Activity {
-final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
+    final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
+    final String Google_Places_API_Key = "AIzaSyAsb8XP5659RBOaQSYK5e71Ta2Z0CQ_5Q4";
     ArrayList<Place> arrayList = new ArrayList<Place>();
     double latitude = 0.0;
     double longitude = 0.0;
+    GetPlaces asyncTask;
+    int devtappcounter = 0;
+    String dev_range = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        Spinner spinner = (Spinner)findViewById(R.id.spinnerRange);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                dev_range = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         }
 
     public void CheckInButtonClick(View view) {
@@ -48,13 +62,11 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
         GPSService mGPSService = new GPSService(getBaseContext());
         mGPSService.getLocation();
 
-        if (mGPSService.isLocationAvailable == false) {
-
+        if (!mGPSService.isLocationAvailable) {
             // Here you can ask the user to try again, using return; for that
             Toast.makeText(getBaseContext(), "Your location is not available, please try again.", Toast.LENGTH_SHORT).show();
             return;
         } else {
-
             // Getting location co-ordinates
             latitude = mGPSService.getLatitude();
             longitude = mGPSService.getLongitude();
@@ -62,13 +74,24 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
 
             // make sure you close the gps after using it. Save user's battery power
             mGPSService.closeGPS();
-            //Grabs all the places near user
-            new GetPlaces().execute();
-
-
+            //Grabs all the places near user, and places them into an arraylist
+            asyncTask = new GetPlaces();
+            asyncTask.execute();
         }
     }
 
+    public void TdLogoTap(View view) {
+        if (devtappcounter < 2){
+            devtappcounter ++;
+        }
+        else if (devtappcounter >= 2){
+            //Show Slider
+            TextView text = (TextView)findViewById(R.id.textViewRange);
+            text.setVisibility(View.VISIBLE);
+            Spinner SR = (Spinner)findViewById(R.id.spinnerRange);
+            SR.setVisibility(View.VISIBLE);
+        }
+    }
 
     private class GetPlaces extends AsyncTask<Void, Void,  ArrayList<Place>>{
         private ProgressDialog dialog;
@@ -92,26 +115,26 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
             }
             return content.toString();
         }
-            //before the call to google
+
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                arrayList = new ArrayList<Place>();
+                //before the call to google, open a dialog that shows a loading message
                 dialog = new ProgressDialog(MainActivity.this);
                 dialog.setCancelable(false);
                 dialog.setMessage("Loading..");
                 dialog.isIndeterminate();
                 dialog.show();
             }
-            //after the call to google
+
             @Override
             protected void onPostExecute(final ArrayList<Place> result) {
+                //after the call to google
+                //get rid of the loading dialog
                 if (dialog.isShowing()) {
                     dialog.dismiss();
                 }
-                //TEST CODE for testing 1 result
-                //Place temp = result.get(0);
-               // result.clear();
-               //result.add(temp);
 
                 if (result.size() == 1){//ONLY 1 RESULT
                     // 1. Instantiate an AlertDialog.Builder with its constructor
@@ -123,12 +146,16 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked yes button
-                            //TODO: LAUNCH NEW ACTIVITY WITH PLACE INFO
+                            Intent i = new Intent(MainActivity.this ,CouponActivity.class);
+                            i.putExtra("Place",new Gson().toJson(result.get(0)));
+                            startActivity(i);
                         }
                     });
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
+                            asyncTask = new GetPlaces();
+                            asyncTask.execute();
                         }
                     });
                     // 3. Get the AlertDialog from create()
@@ -136,21 +163,14 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                     dialog.show();
                 }
                 else if (result.size() > 1){//MORE THEN 1 RESULT
-                    //ListView lv = (ListView)findViewById(R.id.listViewPlaces);
-                    //ArrayList<String> PlaceNames = new ArrayList<String>();
+                    //make a string array of the names of the places recieved
                     String[] PlaceNames = new String[result.size()];
                     int counter = 0;
+                    //populate the string array
                     for (Place s : result){
                         PlaceNames[counter] = s.getName();
                         counter ++;
                     }
-//                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-//                            MainActivity.this,
-//                            android.R.layout.simple_list_item_1,
-//                            PlaceNames );
-//                    lv.setAdapter(arrayAdapter);
-                    //INSTEAD OF PUTTING IT ON ACTIVITY. PUT IT IN DIALOG WIT THE OTHER 3 RESULT FEATURES
-                    //CHANGE MAIN ACTIVITY TO JUST HAVE 1 BUTTON. THE CHECK-IN BUTTON
 
                     // 1. Instantiate an AlertDialog.Builder with its constructor
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -172,34 +192,33 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                                 @Override
                                 public void onClick(View view) {
                                     ListView lw = ((AlertDialog)d).getListView();
-                                    int but = lw.getCheckedItemPosition();
                                     if (lw.getCheckedItemPosition() != -1){
                                         String checkedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition()).toString();
                                         Toast.makeText(getBaseContext(), checkedItem, Toast.LENGTH_SHORT).show();
                                         //Dismiss once everything is OK.
-
-                                        //TODO: LAUNCH NEW ACTIVITY WITH PLACE INFO
+                                        //LAUNCH NEW ACTIVITY WITH PLACE INFO
                                         Intent i = new Intent(MainActivity.this ,CouponActivity.class);
 
-                                        //sName = et.getText().toString();
-                                        //i.putExtra("Place",sName);
-                                       // i.putExtra("gender",isMale);
+                                        //get the place based on the name of the place they picked
                                         for (Place p : result){
-                                            if (p.getName() == checkedItem)
+                                            if (p.getName().equals(checkedItem))
+                                                //put the place object in the bundle as a JSON string
                                             i.putExtra("Place",new Gson().toJson(p));
                                         }
+                                        //dismiss the dialog
                                         d.dismiss();
+                                        //launch the activity
                                         startActivity(i);
                                     }
                                     else{
                                     // DO NOT CLOSE DIALOG
-                                        Toast.makeText(getBaseContext(), "Select something you bum", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getBaseContext(), "Please select an option.", Toast.LENGTH_SHORT).show();
                                     }
-
                                 }
                             });
                         }
                     });
+                    //show the dialog
                     d.show();
                 }
                 else{//NO RESULTS
@@ -212,22 +231,20 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked yes button
-                            //TODO: get their latlong again and look for places again
+                            asyncTask = new GetPlaces();
+                            asyncTask.execute();
                         }
                     });
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
-                            //TODO: CLOSE DIALOG
+                            dialog.cancel();
                         }
                     });
                     // 3. Get the AlertDialog from create()
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
-
-
-
             }
             //this will call google and get places at the users current latlong
             @Override
@@ -239,17 +256,16 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                 urlString.append("types=restaurant|cafe|bakery|bar|beauty_salon|bicycle_store|book_store|bowling_alley|clothing_store|convenience_store|" +
                         "department_store|electronics_store|pet_store|shoe_store|shopping_mall|store|furniture_store|gas_station|grocery_or_supermarket|" +
                         "hardware_store|home_goods_store|jewelry_store|liquor_store");//MAYBE REMOVE: Shopping Mall, Bar
-               // urlString.append("&rankby=distance");
                 urlString.append("&location=");
                 urlString.append(Double.toString(latitude));
                 urlString.append(",");
                 urlString.append(Double.toString(longitude));
+                if (devtappcounter == 2){
+                    //Toast.makeText(getBaseContext(), dev_range, Toast.LENGTH_LONG).show();
+                    urlString.append("&radius=" + dev_range);//meters
+                }
                 urlString.append("&radius=1000");//meters
-                urlString.append("&sensor=false&key=" + "AIzaSyAsb8XP5659RBOaQSYK5e71Ta2Z0CQ_5Q4"); //THIS USES SERVER KEY
-                //CANNOT HAVE 'radius' AND 'rankby' in the same statment. So will keep radius small
-                //The goal it to have very few places show up.
-                //if only 1 result is there then ask them if there currently their.
-                //if multiple, then show list
+                urlString.append("&sensor=false&key=" + Google_Places_API_Key);
                 try {
                     //sends the request
                     String json = getJSON(urlString.toString());
@@ -263,12 +279,40 @@ final String API_KEY = "AIzaSyDyQ-faomCpZDP_TIMqJm0OOBfZm12vvlw";
                             Log.v("Places Services ", "" + place);
                             arrayList.add(place);
                         } catch (Exception e) {
-                           int error = 0;
+                            // 1. Instantiate an AlertDialog.Builder with its constructor
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                            // 2. Chain together various setter methods to set the dialog characteristics
+                            builder.setMessage("There was an error when attempting to get any places. Please try again later.")
+                                    .setTitle("There was an Error.");
+                            builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // User clicked yes button
+                                    asyncTask.cancel(true);
+                                }
+                            });
+                            // 3. Get the AlertDialog from create()
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
                         }
                     }
                 } catch (JSONException ex) {
                     Toast.makeText(getBaseContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
-                    //ERROR HANDLE IT
+                    // 1. Instantiate an AlertDialog.Builder with its constructor
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                    // 2. Chain together various setter methods to set the dialog characteristics
+                    builder.setMessage("There was an error when attempting to get any places. Please try again later.")
+                            .setTitle("There was an Error.");
+                    builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User clicked yes button
+                            asyncTask.cancel(true);
+                        }
+                    });
+                    // 3. Get the AlertDialog from create()
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
                 return arrayList;
             }
