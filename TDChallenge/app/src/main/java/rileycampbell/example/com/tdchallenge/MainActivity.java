@@ -264,7 +264,7 @@ public class MainActivity extends Activity {
                     //Toast.makeText(getBaseContext(), dev_range, Toast.LENGTH_LONG).show();
                     urlString.append("&radius=" + dev_range);//meters
                 }
-                urlString.append("&radius=1000");//meters
+                urlString.append("&radius=25");//meters
                 urlString.append("&sensor=false&key=" + Google_Places_API_Key);
                 try {
                     //sends the request
