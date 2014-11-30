@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +29,6 @@ public class CouponActivity extends Activity {
     private double transactionsTotal = 0.0;
     private String couponTier = "Current Coupon Tier: Bronze";
     private String coupon = "Coupon: 15% off purchase";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +39,10 @@ public class CouponActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             jsonMyObject = extras.getString("Place");
+        }
+        if ( extras.getBoolean("DevOptions")){
+            Button btn = (Button)findViewById(R.id.buttonTransaction);
+            btn.setVisibility(View.VISIBLE);
         }
         Place place = new Gson().fromJson(jsonMyObject, Place.class);
 
@@ -89,12 +93,14 @@ public class CouponActivity extends Activity {
                 do {
                     System.out.println("Check-In " +c.getString(1) + " " +  c.getString(2) );
                     // sum their transactions so that we'll know what coupon tier they're in
-                    transactionsTotal += Double.valueOf(c.getString(2));
                 } while (c.moveToNext());
             }
             c = myDbHelper.getLastUserTransatPlace(place);
             if (c.moveToFirst())
             {
+                do {
+                    transactionsTotal += Double.valueOf(c.getString(1));
+                } while (c.moveToNext());
                 c.moveToLast();
                 System.out.println("Last check-in's" +c.getString(0) + " " +  c.getString(1) );
                 //display last check in at this location
@@ -170,45 +176,62 @@ public class CouponActivity extends Activity {
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                // get user input and send it to DB
-                                userVal = Double.parseDouble(userInput.getText().toString());
-                                DataBaseHelper myDbHelper;
-                                myDbHelper = new DataBaseHelper(CouponActivity.this);
-                                try {
-                                    myDbHelper.createDataBase();
-                                } catch (IOException ioe) {
-                                    throw new Error("Unable to create database");
-                                }
-                                try {
-                                    myDbHelper.openDataBase();
-                                    if (isUserTrans) {
-                                        myDbHelper.addUserTransaction(userVal);
-                                        Cursor c = myDbHelper.getUserTransactions();
-                                        if (c.moveToFirst())
-                                        {
-                                            do {
-                                                System.out.println("User Transactions " +c.getString(0) + " " + c.getString(1) + " " + c.getString(2) );
-                                            } while (c.moveToNext());
-                                            c.close();
-                                        }
-                                    } else {
-                                        myDbHelper.addTransaction(userVal);
-                                    }
+                                if (!userInput.getText().toString().isEmpty()) {
+                                    // get user input and send it to DB
+                                    userVal = Double.parseDouble(userInput.getText().toString());
 
-                                    myDbHelper.close();
-                                } catch (SQLException sqle) {
-                                    throw sqle;
-                                } catch (java.sql.SQLException e) {
-                                    e.printStackTrace();
+                                    DataBaseHelper myDbHelper;
+                                    myDbHelper = new DataBaseHelper(CouponActivity.this);
+                                    try {
+                                        myDbHelper.createDataBase();
+                                    } catch (IOException ioe) {
+                                        throw new Error("Unable to create database");
+                                    }
+                                    try {
+                                        myDbHelper.openDataBase();
+                                        if (isUserTrans) {
+                                            String result = myDbHelper.addUserTransaction(userVal);
+                                            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CouponActivity.this);
+                                            alertDialogBuilder.setMessage(result);
+                                            alertDialogBuilder.setPositiveButton("Got it!",
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int arg1) {
+                                                            dialog.dismiss();
+                                                        }
+                                                    });
+                                            AlertDialog alert = alertDialogBuilder.create();
+                                            alert.show();
+                                            Cursor c = myDbHelper.getUserTransactions();
+                                            if (c.moveToFirst()) {
+                                                do {
+                                                    System.out.println("User Transactions " + c.getString(0) + " " + c.getString(1) + " " + c.getString(2));
+                                                } while (c.moveToNext());
+                                                c.close();
+                                            }
+                                        } else {
+                                            myDbHelper.addTransaction(userVal);
+                                        }
+
+                                        myDbHelper.close();
+                                    } catch (SQLException sqle) {
+                                        throw sqle;
+                                    } catch (java.sql.SQLException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                else{
+                                    Toast.makeText(getBaseContext(), "Please Enter an Amount.", Toast.LENGTH_LONG).show();
                                 }
                             }
+
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
-                });
+                        });
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();

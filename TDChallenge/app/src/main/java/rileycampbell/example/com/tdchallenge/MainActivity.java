@@ -148,6 +148,7 @@ public class MainActivity extends Activity {
                             // User clicked yes button
                             Intent i = new Intent(MainActivity.this ,CouponActivity.class);
                             i.putExtra("Place",new Gson().toJson(result.get(0)));
+                            i.putExtra("DevOptions", devtappcounter == 2);
                             startActivity(i);
                         }
                     });
@@ -205,6 +206,7 @@ public class MainActivity extends Activity {
                                                 //put the place object in the bundle as a JSON string
                                             i.putExtra("Place",new Gson().toJson(p));
                                         }
+                                        i.putExtra("DevOptions", devtappcounter == 2);
                                         //dismiss the dialog
                                         d.dismiss();
                                         //launch the activity
