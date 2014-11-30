@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.IOException;
@@ -24,6 +25,10 @@ import com.google.gson.Gson;
 
 public class CouponActivity extends Activity {
     private double userVal = 0.0;
+    private double transactionsTotal = 0.0;
+    private String couponTier = "Current Coupon Tier: Bronze";
+    private String coupon = "Coupon: 15% off purchase";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +88,8 @@ public class CouponActivity extends Activity {
             {
                 do {
                     System.out.println("Check-In " +c.getString(1) + " " +  c.getString(2) );
+                    // sum their transactions so that we'll know what coupon tier they're in
+                    transactionsTotal += Double.valueOf(c.getString(2));
                 } while (c.moveToNext());
             }
             c = myDbHelper.getLastUserTransatPlace(place);
@@ -105,6 +112,22 @@ public class CouponActivity extends Activity {
         } catch (java.sql.SQLException e) {
             e.printStackTrace();
         }
+
+        // figure out what coupon tier they're at for this location
+        // Coupons are completely stubbed out, the idea is that they'll get greater benefits based on their coupon tier
+        if( transactionsTotal >= 250.00 && transactionsTotal < 500.00 ) {
+            couponTier = "Current Coupon Tier: Silver";
+            coupon = "Coupon: 25% off purchase";
+        }
+        else if( transactionsTotal >= 500.00 ) {
+            couponTier = "Current Coupon Tier: Gold";
+            coupon = "Coupon: 35% off purchase";
+        }
+        TextView tvCouponTier = (TextView)findViewById(R.id.textViewCurrentCouponTier);
+        tvCouponTier.setText(couponTier);
+
+        TextView tvCoupon = (TextView)findViewById(R.id.textViewCurrentCoupon);
+        tvCoupon.setText(coupon);
 
     }
 
@@ -203,6 +226,19 @@ public class CouponActivity extends Activity {
             case R.id.buttonUserTransaction:
                 userVal = 0.0;
                 OpenTextDialog(true);
+                break;
+            case R.id.imageViewInfo:
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setMessage("Coupon tiers are determined by the amount of money you've spent at your favourite shops.  The higher the coupon tier, the higher the rewards!");
+                alertDialogBuilder.setPositiveButton("Got it!",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = alertDialogBuilder.create();
+                alert.show();
                 break;
         }
 

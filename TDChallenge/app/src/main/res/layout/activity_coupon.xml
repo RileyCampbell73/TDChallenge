@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Current Place: "
+            android:textColor="#fff"
             android:id="@+id/textViewPlaceName"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -28,26 +29,39 @@
             android:id="@+id/textViewLastCheckin"
             android:visibility="gone" />
 
-        <Button
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton2"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="25 % off purchase" />
+            android:textColor="#fff"
+            android:text="Current Coupon Tier: Bronze"
+            android:id="@+id/textViewCurrentCouponTier" />
 
-        <Button
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton4"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="5$ off Blank" />
+            android:textColor="#fff"
+            android:text="Coupon: 15% off purchase"
+            android:id="@+id/textViewCurrentCoupon" />
 
-        <Button
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="153dp"
+            android:layout_height="115dp"
+            android:id="@+id/imageViewBarcode"
+            android:src="@drawable/barcode" />
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton3"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="$10 or more for movie ticket" />
+            android:textColor="#fff"
+            android:text="Scan this coupon and start saving!"
+            android:id="@+id/textViewCouponInstructions" />
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:id="@+id/imageViewInfo"
+            android:src="@drawable/information"
+            android:onClick="OnButtonClick" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -59,6 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="I made a transaction here!"
+                android:textColor="#fff"
                 android:id="@+id/buttonUserTransaction"
                 android:onClick="OnButtonClick" />
 
@@ -67,6 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Add a transaction"
+                android:textColor="#fff"
                 android:id="@+id/buttonTransaction"
                 android:onClick="OnButtonClick" />
 
