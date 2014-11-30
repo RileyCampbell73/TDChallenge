@@ -26,6 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#fff"
             android:id="@+id/textViewLastCheckin"
             android:visibility="gone" />
 
@@ -63,30 +64,30 @@
             android:src="@drawable/information"
             android:onClick="OnButtonClick" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="400px"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_round"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="I made a transaction here!"
+            android:textColor="#fff"
+            android:singleLine="false"
+            android:id="@+id/buttonUserTransaction"
+            android:onClick="OnButtonClick" />
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="I made a transaction here!"
-                android:textColor="#fff"
-                android:id="@+id/buttonUserTransaction"
-                android:onClick="OnButtonClick" />
-
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Add a transaction"
-                android:textColor="#fff"
-                android:id="@+id/buttonTransaction"
-                android:onClick="OnButtonClick" />
-
-        </LinearLayout>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="275px"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_round"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Add a transaction"
+            android:textColor="#fff"
+            android:singleLine="false"
+            android:id="@+id/buttonTransaction"
+            android:onClick="OnButtonClick"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </RelativeLayout>
