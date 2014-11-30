@@ -28,7 +28,7 @@ public class CouponActivity extends Activity {
     private double transactionsTotal = 0.0;
     private String couponTier = "Current Coupon Tier: Bronze";
     private String coupon = "Coupon: 15% off purchase";
-
+    private boolean devOptions = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +40,7 @@ public class CouponActivity extends Activity {
         if (extras != null) {
             jsonMyObject = extras.getString("Place");
         }
+        devOptions = extras.getBoolean("DevOptions");
         Place place = new Gson().fromJson(jsonMyObject, Place.class);
 
         TextView text = (TextView) findViewById(R.id.textViewPlaceName);
@@ -182,7 +183,18 @@ public class CouponActivity extends Activity {
                                 try {
                                     myDbHelper.openDataBase();
                                     if (isUserTrans) {
-                                        myDbHelper.addUserTransaction(userVal);
+                                        String result = myDbHelper.addUserTransaction(userVal);
+                                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CouponActivity.this);
+                                        alertDialogBuilder.setMessage(result);
+                                        alertDialogBuilder.setPositiveButton("Got it!",
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int arg1) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                        AlertDialog alert = alertDialogBuilder.create();
+                                        alert.show();
                                         Cursor c = myDbHelper.getUserTransactions();
                                         if (c.moveToFirst())
                                         {

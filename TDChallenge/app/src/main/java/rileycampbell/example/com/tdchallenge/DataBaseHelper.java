@@ -171,13 +171,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                                         "WHERE p.GPLaceID = ?",new String[]{place.getId()});
         return c;
     }
-    public void addUserTransaction(double userSpent){
+    public String addUserTransaction(double userSpent){
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
         int usertime = (Integer.parseInt(dateFormat.format(date).toString().substring(11, 13)) * 60) + Integer.parseInt(dateFormat.format(date).toString().substring(14, 16));
         //System.out.println("Usertime " + usertime);
         Cursor c =  myDataBase.rawQuery("Select * from Transactions Where instr (DateTime, ?) > 0; ",new String[]{dateFormat.format(date).toString().substring(0, 10)});
-
+        String returnString = "An error occurred. Please try again later.";
         if (c.moveToFirst())
         {
             do {
@@ -189,6 +189,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 if (usertime <= (transminutes + 60) && usertime >= transminutes){
                     if (userSpent == c.getDouble(2)){
                         //add the user transaction
+
                         ContentValues values = new ContentValues();
                         values = new ContentValues();
                         Cursor check =  myDataBase.rawQuery("Select * from Check_In",null);
@@ -196,19 +197,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         values.put("transID", c.getInt(0));
                         values.put("placeID", check.getInt(2));
                         myDataBase.insert("UserTransactions",null,values);
+                        returnString = "Success! This transaction has been logged as a Check-in Transaction!";
+                        break;
                     }
                     else{
                         //Price doesnt match any transaction in the last hour
+                        returnString = "We were unable to find a Transaction matching the amount you input.";
                     }
                 }else{
                     //That transaction was not in the last hour
+                    returnString = "There are no transactions found from the last 60 minutes.";
                 }
             } while (c.moveToNext());
         }
         else{
             //NO TRANSACTIONS
             System.out.println("No Transactions today");
+            returnString = "There are no transactions found for today.";
         }
+
+            return returnString;
+
     }
     public void Check_In(Place place){
         //check for place
