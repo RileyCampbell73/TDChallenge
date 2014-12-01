@@ -45,8 +45,8 @@
             android:id="@+id/textViewCurrentCoupon" />
 
         <ImageView
-            android:layout_width="153dp"
-            android:layout_height="115dp"
+            android:layout_width="225dp"
+            android:layout_height="170dp"
             android:id="@+id/imageViewBarcode"
             android:src="@drawable/barcode" />
 
