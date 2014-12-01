@@ -17,10 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import java.io.IOException;
-
 import com.google.gson.Gson;
 
 
@@ -58,13 +55,8 @@ public class CouponActivity extends Activity {
 
         try {
             myDbHelper.openDataBase();
-            //myDbHelper.Check_In(place);
-           // myDbHelper.removeeverything();
-            //Cursor c = myDbHelper.getTransactions();
-            //Cursor c = myDbHelper.getPlaces();
+            //add this place to the database
             myDbHelper.Check_In(place);
-           //myDbHelper.addTransaction(15.74);
-            //myDbHelper.addUserTransaction(15.74);
 
             Cursor c = myDbHelper.getUserTransactions();
             if (c.moveToFirst())
